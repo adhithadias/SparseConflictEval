@@ -1,0 +1,8 @@
+Tensor, Taco Transpose (ms), Taco (ms), Fused(Ours) (ms)
+vast-2015-mc1-3d, 23417.4, 115.242, 805.172
+darpa1998, 25336.5, 77.446, 27510.1
+nell-2, 72859, 198.26, 27237.6
+freebase_music, 92361.9, 623.471, 2855.61
+flickr-3d, 106038, 375.393, 32537.3
+freebase_sampled, 127380, 948.801, 4062.99
+nell-1, 137195, 549.35, 847153

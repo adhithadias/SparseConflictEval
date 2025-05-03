@@ -1,0 +1,18 @@
+Matrix File,Min Non-Zero,Max Non-Zero,Median Non-Zero,Average Non-Zero,Std Dev Non-Zero
+bcsstk17.mtx,2,7,5.0,5.03,0.88
+scircuit.mtx,2,7,3.0,3.23,0.45
+mac_econ_fwd500.mtx,2,5,3.0,3.36,0.53
+majorbasis.mtx,3,4,4.0,4.00,0.01
+Lin.mtx,3,4,4.0,3.90,0.30
+rma10.mtx,3,6,5.0,5.29,0.58
+cop20k_A.mtx,1,6,5.0,4.19,1.53
+webbase-1M.mtx,2,10,3.0,3.03,0.29
+cant.mtx,2,6,6.0,5.61,0.53
+pdb1HYS.mtx,4,7,6.0,6.16,0.44
+ecology1.mtx,3,3,3.0,3.00,0.00
+largebasis.mtx,3,4,4.0,4.00,0.01
+consph.mtx,2,6,6.0,5.74,0.85
+shipsec1.mtx,5,6,6.0,5.85,0.36
+atmosmodd.mtx,3,4,4.0,3.94,0.24
+pwtk.mtx,3,7,6.0,5.92,0.29
+circuit5M.mtx,2,16,3.0,3.14,0.54

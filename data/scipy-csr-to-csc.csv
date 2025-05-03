@@ -1,0 +1,18 @@
+Matrix, Transpose (ms)
+bcsstk17.mtx, 1.505375
+scircuit.mtx, 6.675959
+mac_econ_fwd500.mtx, 4.163742
+majorbasis.mtx, 6.476402
+Lin.mtx, 5.675077
+rma10.mtx, 7.673025
+cop20k_A.mtx, 9.653091
+webbase-1M.mtx, 14.850855
+cant.mtx, 11.302471
+pdb1HYS.mtx, 14.871120
+ecology1.mtx, 13.454914
+largebasis.mtx, 15.266180
+consph.mtx, 22.418022
+shipsec1.mtx, 23.424625
+atmosmodd.mtx, 28.255701
+pwtk.mtx, 34.653187
+circuit5M.mtx, 200.145721
