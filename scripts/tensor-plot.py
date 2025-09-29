@@ -103,7 +103,7 @@ ax2.bar(indices + speedup_bar_width, df['Speedup vs Taco'], speedup_bar_width,
 
 # Set log scale for the second subplot
 ax2.set_yscale('log')
-ax2.set_ylabel('Speedup (Baseline Time / Fused Time) - Log Scale')
+ax2.set_ylabel('Speedup (Baseline Time / Fused Time)\nLog Scale')
 ax2.set_xlabel('Tensor')
 
 # Set custom x-axis labels for second subplot
