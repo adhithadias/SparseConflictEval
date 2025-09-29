@@ -8,6 +8,8 @@
 
 #define TACO_MIN(_a,_b) ((_a) < (_b) ? (_a) : (_b))
 
+bool assembleWhileCompute = false;
+
 int computeexpr(taco_tensor_t *y, taco_tensor_t *A, taco_tensor_t *B);
 
 int computeexpr(taco_tensor_t *y, taco_tensor_t *A, taco_tensor_t *B) {
@@ -156,13 +158,18 @@ int main(int argc, char* argv[]) {
     auto dur_taco = std::chrono::duration_cast<std::chrono::microseconds>(toc-tic).count()/1000.0;
 
     Tensor<double> v1({A.getDimension(0)}, dv);
-    v1(i) = A(i, j, k) * B(i, j, k);
-    v1.compile();
+    v1(i) = A(i, j, k) * AT(i, k, j);
+    IndexStmt stmt = v1.getAssignment().concretize(true);
+    std::cout << "stmt: " << stmt << std::endl;
+    v1.setNewPath(true);
+    v1.setAssembleWhileCompute(assembleWhileCompute);
+    v1.compile(stmt, assembleWhileCompute);
     v1.assemble();
 
     taco_tensor_t* v1_storage = v1.getStorage();
     tic = std::chrono::high_resolution_clock::now();
-    computeexpr(v1_storage, a_storage, at_storage);
+    // computeexpr(v1_storage, a_storage, at_storage);
+    v1.compute();
     toc = std::chrono::high_resolution_clock::now();
     auto dur_ours = std::chrono::duration_cast<std::chrono::microseconds>(toc-tic).count()/1000.0;
 
@@ -173,9 +180,6 @@ int main(int argc, char* argv[]) {
         << ", " << dur_taco
         << ", " << dur_ours
         << std::endl;
-
-
-    // this_thread::sleep_for(chrono::seconds(10));
 
     return 0;
 }
