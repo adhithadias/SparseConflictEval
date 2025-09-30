@@ -61,7 +61,7 @@ df['Nnz'] = tensors['Nnz'].apply(lambda x: convert_rows_to_string(x))
 print(df)
 
 # Set up the figure with two subplots
-fig, (ax1, ax2) = plt.subplots(2, 1, figsize=(14, 12))
+fig, (ax1, ax2) = plt.subplots(2, 1, figsize=(28, 6))
 
 # Set the positions and width for the bars
 group_spacing = 0.5
