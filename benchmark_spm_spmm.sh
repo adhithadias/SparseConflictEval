@@ -9,17 +9,28 @@ export NEW_TACO_COMPILER=/home/min/a/kadhitha/scratch-space/fused-compiler/taco-
 export PATH=$NEW_TACO_COMPILER/build/bin/:$PATH
 export LD_LIBRARY_PATH=$NEW_TACO_COMPILER/build/lib:$LD_LIBRARY_PATH
 
-val1=(1024 2048 4096 8192 16384 32768 65536)
-val2=(0.1 0.1 0.1 0.01 0.01 0.001 0.001)
+val1=(1024 2048 4096 8192 16384 32768)
+val2=(0.05 0.01 0.001 0.0001)
 r=10    
 
 mkdir -p tmp
 
-for i in {0..6}
+# write Size, Density, Ours (ms), Hadamard (ms), Matmul (ms), Taco (ms) to data/hadamard-spmm.csv
+echo "Size,Density,Ours (ms),Hadamard (ms),Matmul (ms),Taco (ms)" > data/hadamard-spmm.csv
+
+# iterate over all combinations of val1 and val2
+for i in {0..3}
 do
-    n=${val1[$i]}
-    d=${val2[$i]}
-    echo "Running for n=$n, d=$d"
-    ./build/bin/benchmark_spm_spm_spm -n $n -d $d -r $r | tee -a tmp/benchmark_spm_spm_spm_results.txt
+    for j in {0..5}
+    do
+        n=${val1[$j]}
+        d=${val2[$i]}
+        echo "Running for n=$n, d=$d"
+        output=$(./build/bin/benchmark_spm_spm_spm -n $n -d $d -r $r)
+        last_line=$(echo "$output" | tail -n 1)
+        echo "$last_line"
+        echo "$last_line" >> data/hadamard-spmm.csv
+        # ./build/bin/benchmark_spm_spm_spm -n $n -d $d -r $r | tee -a tmp/benchmark_spm_spm_spm_results.txt
+    done
 done
-echo "Results saved to tmp/benchmark_spm_spm_spm_results.txt"
+echo "Results saved to data/hadamard-spmm.csv"
