@@ -5,9 +5,12 @@
 # for each pair, execute for r rounds and read the output from the terminal and save it to a file
 # there are two outputs Fused median: X ms and Taco median: Y ms in two lines
 
-export NEW_TACO_COMPILER=/home/min/a/kadhitha/scratch-space/fused-compiler/taco-transpose-fused
-export PATH=$NEW_TACO_COMPILER/build/bin/:$PATH
-export LD_LIBRARY_PATH=$NEW_TACO_COMPILER/build/lib:$LD_LIBRARY_PATH
+if [ -z "$TACO_ROOT" ]; then
+    export TACO_ROOT=/home/min/a/kadhitha/scratch-space/fused-compiler/taco-transpose-fused
+fi
+
+export PATH=$TACO_ROOT/build/bin/:$PATH
+export LD_LIBRARY_PATH=$TACO_ROOT/build/lib:$LD_LIBRARY_PATH
 
 val1=(1024 2048 4096 8192 16384 32768)
 val2=(0.05 0.01 0.001 0.0001)

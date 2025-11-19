@@ -1,10 +1,29 @@
+from enum import Enum
 import pandas as pd
+import matplotlib
 import matplotlib.pyplot as plt
 import numpy as np
 import seaborn as sns
+import os
+
+class FontSize(Enum):
+    SMALL_SIZE = 8
+    MEDIUM_SIZE = 12
+    BIGGER_SIZE = 16
+    
+plt.rcParams.update({'font.size': FontSize.BIGGER_SIZE.value})
+
+matplotlib.rcParams['pdf.fonttype'] = 42
+matplotlib.rcParams['ps.fonttype'] = 42
+
+# get DATA_DIR from environment variable, if not set, use default path
+data_path = os.getenv('DATA_DIR', '/home/min/a/kadhitha/scratch-space/transpose-fused/data/')
+
+# get IMAGES_DIR from environment variable, if not set, use default path
+images_path = os.getenv('IMAGES_DIR', '/home/min/a/kadhitha/scratch-space/transpose-fused/images/')
 
 # Read the data
-df = pd.read_csv('/home/min/a/kadhitha/scratch-space/transpose-fused/data/hadamard-spmm.csv')
+df = pd.read_csv(f'{data_path}/hadamard-spmm.csv')
 
 # Clean column names (remove extra spaces)
 df.columns = df.columns.str.strip()
@@ -36,9 +55,9 @@ for i, density in enumerate(densities):
     
     # Bar 2: Hadamard + Matmul (stacked)
     bars2_bottom = plt.bar(x_pos + width/2, density_data['Hadamard (ms)'], width,
-                          label='Hadamard', alpha=0.8)
+                          label='Hadamard TACO', alpha=0.8)
     bars2_top = plt.bar(x_pos + width/2, density_data['Matmul (ms)'], width,
-                       bottom=density_data['Hadamard (ms)'], label='Matmul', alpha=0.8)
+                       bottom=density_data['Hadamard (ms)'], label='Matmul TACO', alpha=0.8)
     
     plt.xlabel('Matrix Size')
     plt.ylabel('Time (ms)')
@@ -64,7 +83,7 @@ plt.title('Speedup Heatmap: Taco vs Ours')
 plt.xlabel('Matrix Size')
 plt.ylabel('Density')
 plt.tight_layout()
-plt.savefig('/home/min/a/kadhitha/scratch-space/transpose-fused/images/hadamard-spmm-heatmap.pdf')
+plt.savefig(f'{images_path}/hadamard-spmm-heatmap.pdf')
 
 # Alternative: Single figure with all density comparisons
 fig, axes = plt.subplots(2, 2, figsize=(16, 12))
@@ -82,9 +101,9 @@ for i, density in enumerate(densities):
     
     # Bar 2: Hadamard + Matmul (stacked)
     axes[i].bar(x_pos + width/2, density_data['Hadamard (ms)'], width,
-               label='Hadamard', alpha=0.8, color='orange')
+               label='Hadamard TACO', alpha=0.8, color='orange')
     axes[i].bar(x_pos + width/2, density_data['Matmul (ms)'], width,
-               bottom=density_data['Hadamard (ms)'], label='Matmul', alpha=0.8, color='green')
+               bottom=density_data['Hadamard (ms)'], label='Matmul TACO', alpha=0.8, color='green')
     
     axes[i].set_xlabel('Matrix Size')
     axes[i].set_ylabel('Time (ms)')
@@ -97,4 +116,4 @@ for i, density in enumerate(densities):
 
 plt.suptitle('Performance Comparison Across Different Densities')
 plt.tight_layout()
-plt.savefig('/home/min/a/kadhitha/scratch-space/transpose-fused/images/hadamard-spmm-bar-plot.pdf')
+plt.savefig(f'{images_path}/hadamard-spmm-bar-plot.pdf')
