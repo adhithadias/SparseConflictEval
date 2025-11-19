@@ -12,6 +12,10 @@ class FontSize(Enum):
     
 plt.rcParams.update({'font.size': FontSize.BIGGER_SIZE.value})
 
+# # set font type to linux libertine and font to biolinum
+# plt.rcParams['font.family'] = 'Linux Libertine'
+# plt.rcParams['font.serif'] = 'Linux Biolinum'
+
 matplotlib.rcParams['pdf.fonttype'] = 42
 matplotlib.rcParams['ps.fonttype'] = 42
 
@@ -26,12 +30,18 @@ matrix_type = int(sys.argv[1])
 print(f"Matrix type: {matrix_type}")
 
 if matrix_type == 0:
-    datafile = 'data/elementwise-mul.csv'
-    savefile = 'images/elementwise-mul.pdf'
-else:
+    datafile = 'data/elementwise-mul-with.csv'
+    savefile1 = 'images/elementwise-mul-with.pdf'
+    savefile2 = 'images/elementwise-mul-with-speedup.pdf'
+elif matrix_type == 1:
     datafile = 'data/dotprod-dense.csv'
-    savefile = 'images/dotprod-dense.pdf'
-    
+    savefile1 = 'images/dotprod-dense.pdf'
+    savefile2 = 'images/dotprod-dense-speedup.pdf'
+else:
+    datafile = 'data/elementwise-mul-without.csv'
+    savefile1 = 'images/elementwise-mul-without.pdf'
+    savefile2 = 'images/elementwise-mul-without-speedup.pdf'
+
 def convert_rows_to_string(row):
     if row / 1_000_000 > 1:
         return f"{row / 1_000_000:.1f}M"
@@ -40,7 +50,7 @@ def convert_rows_to_string(row):
     else:
         return f"{row}"
 
-print(f"Processing {datafile} and saving to {savefile}")
+print(f"Processing {datafile} and saving to {savefile1} and {savefile2}")
 # Load data from CSV file
 # Replace 'data.csv' with the actual path to your CSV file
 df = pd.read_csv(datafile)
@@ -75,8 +85,8 @@ pd.set_option('display.max_columns', None)  # Show all columns
 print(df)
 
 # Set up the figure and axis
-# fig, ax1 = plt.subplots(figsize=(14, 8))
-fig, (ax1, ax2) = plt.subplots(2, 1, figsize=(14, 12))
+fig, ax1 = plt.subplots(figsize=(14, 8))
+# fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(28, 8))
 
 # Set the positions and width for the bars
 group_spacing = 0.5
@@ -84,22 +94,22 @@ indices = np.arange(len(df)) * (group_spacing + 1)
 bar_width = 0.25
 
 # Plot the bar for Fused (Ours)
-fused_bars = ax1.bar(indices, df['Fused(Ours) (ms)'], bar_width, label='Fused (Ours) (ms)')
+fused_bars = ax1.bar(indices, df['Fused(Ours) (ms)'], bar_width, label='Ours')
 
 # Plot the stacked bar for Transpose + Taco with Taco at the bottom
 taco_bars = ax1.bar(indices + bar_width, df['Taco (ms)'], bar_width, label='Taco Execution (ms)', color='gray')
-transpose_bars = ax1.bar(indices + bar_width, df['Transpose (ms)'], bar_width, bottom=df['Taco (ms)'], label='Scipy Transpose (ms)')
+transpose_bars = ax1.bar(indices + bar_width, df['Transpose (ms)'], bar_width, bottom=df['Taco (ms)'], label='Scipy Transpose')
 
 # Plot the stacked bar for Taco Transpose + Taco with Taco at the bottom
 taco_only_bars = ax1.bar(indices + 2 * bar_width, df['Taco (ms)'], bar_width, color='gray')
-taco_transpose_bars = ax1.bar(indices + 2 * bar_width, df['Chou Transpose (ms)'], bar_width, bottom=df['Taco (ms)'], label='Taco (Chou et al)\nTranspose (ms)')
+taco_transpose_bars = ax1.bar(indices + 2 * bar_width, df['Chou Transpose (ms)'], bar_width, bottom=df['Taco (ms)'], label='Chou et al. Transpose')
 
 ax1.bar(indices + 3 * bar_width, df['Taco (ms)'], bar_width, color='gray')
-taco_default_transpose_bars = ax1.bar(indices + 3 * bar_width, df['Taco Transpose (ms)'], bar_width, bottom=df['Taco (ms)'], label='Taco Default Transpose (ms)')
+taco_default_transpose_bars = ax1.bar(indices + 3 * bar_width, df['Taco Transpose (ms)'], bar_width, bottom=df['Taco (ms)'], label='Taco Default Transpose')
 
 # Set log scale for the primary y-axis
 ax1.set_yscale('log')
-ax1.set_ylabel('Time (ms) - Log Scale')
+ax1.set_ylabel('Time (ms in Log Scale)')
 
 # Set custom x-axis labels with Matrix and Nnz values
 # xtick_labels = [f"{matrix}\nNnz: {convert_rows_to_string(nnz)}, N: {convert_rows_to_string(n)}\nDensity: {'%.2E' % density}" for matrix, nnz, density, n in zip(df['Matrix'], df['Nnz'], df['Density'], df['Rows'])]
@@ -111,21 +121,26 @@ ax1.set_xticklabels(xtick_labels, rotation=40)
 ax1.set_xlabel('Matrix')
 # ax1.set_title('Performance Comparison: Transpose + Taco vs. Fused (Ours) vs. Taco Transpose + Taco with Speedup')
 ax1.legend(loc="upper left", ncol=2)
-ax1.set_title('Performance Comparison: Time (ms)')
+# ax1.set_title('Performance Comparison: Time (ms)')
+
+plt.tight_layout()
+plt.savefig(savefile1)
 
 # Add a legend for the primary axis
 # ax1.legend(loc="upper center", bbox_to_anchor=(1.05, 1), borderaxespad=0.)
 
+
+fig, ax2 = plt.subplots(figsize=(14, 8))
 # Create a secondary y-axis for the speedup
 # ax2 = ax1.twinx()
 # ax2.plot(indices + bar_width, df['Speedup Chou'], color='blue', marker='o', label='Speedup (Fused (Ours) vs.\n        [Taco (Chou et al) Transpose + Taco)]')
-ax2.bar(indices, df['Speedup'], bar_width, label='Speedup (Ours vs. [Scipy Transpose + Taco)]', color='blue', alpha=0.7)
-ax2.bar(indices + bar_width, df['Speedup Chou'], bar_width, label='Speedup (Ours vs.\n        [Taco (Chou et al) Transpose + Taco)]', color='black', alpha=0.7)
+ax2.bar(indices, df['Speedup'], bar_width, label='Speedup vs. [Scipy Transpose + Taco]', color='blue', alpha=0.7)
+ax2.bar(indices + bar_width, df['Speedup Chou'], bar_width, label='Speedup vs. [Chou et al. Transpose + Taco]', color='black', alpha=0.7)
 # ax2.plot(indices + bar_width, df['Speedup'], color='black', marker='o', label='Speedup (Fused (Ours) vs. [Scipy Transpose + Taco)]')
-ax2.bar(indices + 2 * bar_width, df['Speedup Taco Default'], bar_width, label='Speedup (Ours vs.\n        [Taco Default Transpose + Taco)]', color='green', alpha=0.7)
+ax2.bar(indices + 2 * bar_width, df['Speedup Taco Default'], bar_width, label='Speedup vs. [Taco Default Transpose + Taco]', color='green', alpha=0.7)
 
 ax2.set_yscale('log')
-ax2.set_ylabel('Speedup (Baseline Time / Ours Time)\nLog Scale', color='black')
+ax2.set_ylabel('Speedup (Log Scale)', color='black')
 ax2.tick_params(axis='y', labelcolor='black')
 ax2.set_xlabel('Matrix')
 
@@ -137,7 +152,7 @@ ax2.axhline(y=1, color='red', linestyle='--', linewidth=1, label='Speedup = 1')
 
 # Add legend for the secondary axis
 legend = ax2.legend(loc="upper left")
-ax2.set_title('Speedup Comparison')
+# ax2.set_title('Speedup Comparison')
 ax2.grid(True, alpha=0.3, axis='y')
 
 # # Set the color of the first label to white
@@ -146,4 +161,4 @@ ax2.grid(True, alpha=0.3, axis='y')
 
 # Display the plot
 plt.tight_layout()
-plt.savefig(savefile)
+plt.savefig(savefile2)

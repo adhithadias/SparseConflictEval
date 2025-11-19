@@ -2,6 +2,11 @@
 export PATH=/home/min/a/kadhitha/scratch-space/taco/build/bin/:$PATH
 export LD_LIBRARY_PATH=/home/min/a/kadhitha/scratch-space/taco/build/lib:$LD_LIBRARY_PATH
 
+# new taco compiler path
+export NEW_TACO_COMPILER=/home/min/a/kadhitha/scratch-space/fused-compiler/taco-transpose-fused
+export PATH=$NEW_TACO_COMPILER/buid/bin/:$PATH
+export LD_LIBRARY_PATH=$NEW_TACO_COMPILER/build/lib:$LD_LIBRARY_PATH
+
 PATH=/home/min/a/kadhitha/scratch-space/taco/build/bin/:$PATH LD_LIBRARY_PATH=/home/min/a/kadhitha/scratch-space/taco/build/lib:$LD_LIBRARY_PATH \
 g++ -std=c++11 -O3 -DNDEBUG -DTACO -I /home/min/a/kadhitha/scratch-space/taco/include/ -L/home/min/a/kadhitha/scratch-space/taco/build/lib test0.cpp -o test0 -ltaco
 
@@ -88,23 +93,47 @@ g++ -std=c++11 -O3 -DNDEBUG -DTACO -I /home/min/a/kadhitha/scratch-space/taco/in
 Y(i,j) = A(i,j) * B(j,i)
 ./test3 -i 494_bus.mtx
 
-./build/bin/elementwise-mul -f bcsstk17.mtx
-./test3 -i scircuit.mtx
-./test3 -i mac_econ_fwd500.mtx
-./test3 -i majorbasis.mtx
-./test3 -i Lin.mtx
-./test3 -i rma10.mtx
-./test3 -i cop20k_A.mtx
-./test3 -i webbase-1M.mtx
-./test3 -i cant.mtx
-./test3 -i pdb1HYS.mtx
-./test3 -i ecology1.mtx
-./test3 -i consph.mtx
-./test3 -i largebasis.mtx
-./test3 -i shipsec1.mtx
-./test3 -i atmosmodd.mtx
-./test3 -i pwtk.mtx
-./test3 -i circuit5M.mtx
+./bin/spmspm -f ../tensors/bus.mtx
+
+python scripts/mtx_nonzero_counter.py ~/scratch-space/suitesparse/mac_econ_fwd500/mac_econ_fwd500.mtx
+
+cd /home/min/a/kadhitha/scratch-space/transpose-fused
+./build/bin/elementwise-mul -f ~/scratch-space/suitesparse/bcsstk17/bcsstk17.mtx
+./build/bin/elementwise-mul -f ~/scratch-space/suitesparse/scircuit/scircuit.mtx
+./build/bin/elementwise-mul -f ~/scratch-space/suitesparse/mac_econ_fwd500/mac_econ_fwd500.mtx
+./build/bin/elementwise-mul -f ~/scratch-space/suitesparse/majorbasis/majorbasis.mtx
+./build/bin/elementwise-mul -f ~/scratch-space/suitesparse/Lin/Lin.mtx
+./build/bin/elementwise-mul -f ~/scratch-space/suitesparse/rma10/rma10.mtx
+./build/bin/elementwise-mul -f ~/scratch-space/suitesparse/cop20k_A/cop20k_A.mtx
+./build/bin/elementwise-mul -f ~/scratch-space/suitesparse/webbase-1M/webbase-1M.mtx
+./build/bin/elementwise-mul -f ~/scratch-space/suitesparse/cant/cant.mtx
+./build/bin/elementwise-mul -f ~/scratch-space/suitesparse/pdb1HYS/pdb1HYS.mtx
+./build/bin/elementwise-mul -f ~/scratch-space/suitesparse/ecology1/ecology1.mtx
+./build/bin/elementwise-mul -f ~/scratch-space/suitesparse/consph/consph.mtx
+./build/bin/elementwise-mul -f ~/scratch-space/suitesparse/largebasis/largebasis.mtx
+./build/bin/elementwise-mul -f ~/scratch-space/suitesparse/shipsec1/shipsec1.mtx
+./build/bin/elementwise-mul -f ~/scratch-space/suitesparse/atmosmodd/atmosmodd.mtx
+./build/bin/elementwise-mul -f ~/scratch-space/suitesparse/pwtk/pwtk.mtx
+./build/bin/elementwise-mul -f ~/scratch-space/suitesparse/circuit5M/circuit5M.mtx
+
+cd /home/min/a/kadhitha/scratch-space/transpose-fused
+./build/bin/dotprod-denseout -f ~/scratch-space/suitesparse/bcsstk17/bcsstk17.mtx
+./build/bin/dotprod-denseout -f ~/scratch-space/suitesparse/scircuit/scircuit.mtx
+./build/bin/dotprod-denseout -f ~/scratch-space/suitesparse/mac_econ_fwd500/mac_econ_fwd500.mtx
+./build/bin/dotprod-denseout -f ~/scratch-space/suitesparse/majorbasis/majorbasis.mtx
+./build/bin/dotprod-denseout -f ~/scratch-space/suitesparse/Lin/Lin.mtx
+./build/bin/dotprod-denseout -f ~/scratch-space/suitesparse/rma10/rma10.mtx
+./build/bin/dotprod-denseout -f ~/scratch-space/suitesparse/cop20k_A/cop20k_A.mtx
+./build/bin/dotprod-denseout -f ~/scratch-space/suitesparse/webbase-1M/webbase-1M.mtx
+./build/bin/dotprod-denseout -f ~/scratch-space/suitesparse/cant/cant.mtx
+./build/bin/dotprod-denseout -f ~/scratch-space/suitesparse/pdb1HYS/pdb1HYS.mtx
+./build/bin/dotprod-denseout -f ~/scratch-space/suitesparse/ecology1/ecology1.mtx
+./build/bin/dotprod-denseout -f ~/scratch-space/suitesparse/consph/consph.mtx
+./build/bin/dotprod-denseout -f ~/scratch-space/suitesparse/largebasis/largebasis.mtx
+./build/bin/dotprod-denseout -f ~/scratch-space/suitesparse/shipsec1/shipsec1.mtx
+./build/bin/dotprod-denseout -f ~/scratch-space/suitesparse/atmosmodd/atmosmodd.mtx
+./build/bin/dotprod-denseout -f ~/scratch-space/suitesparse/pwtk/pwtk.mtx
+./build/bin/dotprod-denseout -f ~/scratch-space/suitesparse/circuit5M/circuit5M.mtx
 
 ./build/bin/tensorcontract-1dout -f ./tensors/A.tns
 ./build/bin/tensor-elwisemul -f ./tensors/A.tns

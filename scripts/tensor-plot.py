@@ -15,7 +15,8 @@ matplotlib.rcParams['pdf.fonttype'] = 42
 matplotlib.rcParams['ps.fonttype'] = 42
 
 datafile = 'data/tensorcontract-1dout.csv'
-savefile = 'images/tensorcontract-1dout.pdf'
+savefile1 = 'images/tensorcontract-1dout.pdf'
+savefile2 = 'images/tensorcontract-1dout-speedup.pdf'
 
 # datafile = 'data/tensor-elwisemul.csv'
 # savefile = 'images/tensor-elwisemul.pdf'
@@ -61,7 +62,8 @@ df['Nnz'] = tensors['Nnz'].apply(lambda x: convert_rows_to_string(x))
 print(df)
 
 # Set up the figure with two subplots
-fig, (ax1, ax2) = plt.subplots(2, 1, figsize=(28, 6))
+fig, ax1 = plt.subplots(1, 1, figsize=(14, 7))
+# fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(28, 7))
 
 # Set the positions and width for the bars
 group_spacing = 0.5
@@ -70,19 +72,19 @@ bar_width = 0.25
 
 # First subplot: Performance comparison (bar chart)
 # Plot the bar for Fused (Ours)
-fused_bars = ax1.bar(indices, df['ours(ms)'], bar_width, label='Fused (Ours) (ms)')
+fused_bars = ax1.bar(indices, df['ours(ms)'], bar_width, label='Ours')
 
 # Plot the stacked bar for Transpose + Taco with Taco at the bottom
 taco_bars = ax1.bar(indices + bar_width, df['taco(ms)'], bar_width, label='Taco (ms)', color='gray')
-transpose_bars = ax1.bar(indices + bar_width, coo_sort['sort only(ms)'], bar_width, bottom=df['taco(ms)'], label='COO Sort Time Only (ms)')
+transpose_bars = ax1.bar(indices + bar_width, coo_sort['sort only(ms)'], bar_width, bottom=df['taco(ms)'], label='COO Sort Time Only')
 
 # Plot the stacked bar for Taco Transpose + Taco with Taco at the bottom
 taco_only_bars = ax1.bar(indices + 2 * bar_width, df['taco(ms)'], bar_width, color='gray')
-taco_transpose_bars = ax1.bar(indices + 2 * bar_width, df['transpose(ms)'], bar_width, bottom=df['taco(ms)'], label='Taco Transpose (ms)')
+taco_transpose_bars = ax1.bar(indices + 2 * bar_width, df['transpose(ms)'], bar_width, bottom=df['taco(ms)'], label='Taco Transpose')
 
 # Set log scale for the first subplot
 ax1.set_yscale('log')
-ax1.set_ylabel('Time (ms) - Log Scale')
+ax1.set_ylabel('Time (ms in Log Scale)')
 
 # Set custom x-axis labels
 xtick_labels = [f"{tensor[0:10]}\n{tensor[10:]}" if len(tensor) > 10 else tensor for tensor in df['Tensor']]
@@ -92,18 +94,23 @@ ax1.set_xticklabels(xtick_labels, rotation=0)
 ax1.set_xlabel('Tensor')
 # Move legend to the left side inside the plot area
 ax1.legend(loc="upper left", ncol=2)
-ax1.set_title('Performance Comparison: Time (ms)')
+# ax1.set_title('Performance Comparison: Time (ms)')
+
+plt.tight_layout()
+plt.savefig(savefile1)
+
+fig, ax2 = plt.subplots(1, 1, figsize=(14, 7))
 
 # Second subplot: Speedup comparison (bar chart)
 speedup_bar_width = 0.35
 ax2.bar(indices, df['Speedup vs Sort Only + Taco'], speedup_bar_width, 
-        label='Speedup (Fused vs. [COO Sort Only + Taco])', color='black', alpha=0.7)
+        label='Speedup vs. [COO Sort Only + Taco]', color='black', alpha=0.7)
 ax2.bar(indices + speedup_bar_width, df['Speedup vs Taco'], speedup_bar_width, 
-        label='Speedup (Fused vs. [Transpose + Taco])', color='blue', alpha=0.7)
+        label='Speedup vs. [Transpose + Taco]', color='blue', alpha=0.7)
 
 # Set log scale for the second subplot
 ax2.set_yscale('log')
-ax2.set_ylabel('Speedup (Baseline Time / Fused Time)\nLog Scale')
+ax2.set_ylabel('Speedup (Log Scale)')
 ax2.set_xlabel('Tensor')
 
 # Set custom x-axis labels for second subplot
@@ -115,9 +122,9 @@ ax2.axhline(y=1, color='red', linestyle='--', linewidth=2, label='Speedup = 1')
 
 # Add legend for the second subplot
 ax2.legend(loc="upper left")
-ax2.set_title('Speedup Comparison')
+# ax2.set_title('Speedup Comparison')
 ax2.grid(True, alpha=0.3, axis='y')
 
 # Display the plot
 plt.tight_layout()
-plt.savefig(savefile)
+plt.savefig(savefile2)

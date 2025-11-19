@@ -3,6 +3,8 @@ from scipy.io import mmread
 from scipy.sparse import csr_matrix
 import argparse
 
+BENCHMARK_FREQUENCEY = 31
+
 MATRICES_DIRECTORY = "/home/min/a/kadhitha/scratch-space/matrices"
 
 def transpose_matrix(filename : str):
@@ -11,17 +13,22 @@ def transpose_matrix(filename : str):
     # mtx_matrix  = mmread('matrices/circuit5M.mtx')
     csr_matrix = mtx_matrix.tocsr().astype('float32')
     
+    print(f"filename, rows, columns, nnz, time (ms)")
     print(f"{filename}, {csr_matrix.shape[0]}, {csr_matrix.shape[1]}, ", end="")
     # print(csr_matrix)
 
-    start_time = time.time()
-    transposed_matrix = csr_matrix.transpose().tocsr()
-    end_time = time.time()
-
-    # Calculate and print the elapsed time
-    elapsed_time = end_time - start_time
+    execution_times = []
     
-    print(f"{transposed_matrix.nnz}, {1000*elapsed_time:.6f}, ")
+    for _ in range(BENCHMARK_FREQUENCEY):
+        start_time = time.time()
+        transposed_matrix = csr_matrix.transpose().tocsr()
+        end_time = time.time()
+        execution_times.append(end_time - start_time)
+
+    # get median of execution times
+    elapsed_time = sorted(execution_times)[len(execution_times)//2]
+    
+    print(f"{transposed_matrix.nnz}, {1000*elapsed_time:.6f}")
 
 ## add argument parser
 
