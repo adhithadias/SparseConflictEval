@@ -17,10 +17,26 @@ matplotlib.rcParams['pdf.fonttype'] = 42
 matplotlib.rcParams['ps.fonttype'] = 42
 
 # get DATA_DIR from environment variable, if not set, use default path
-data_path = os.getenv('DATA_DIR', '/home/min/a/kadhitha/scratch-space/transpose-fused/data/')
+data_path = os.getenv('DATA_DIR') # /local/scratch/a/kadhitha/transpose-fused/images
+if not data_path:
+    # Try to find data directory relative to script location
+    script_dir = os.path.dirname(os.path.abspath(__file__))
+    data_path = os.path.join(os.path.dirname(script_dir), 'data')
+    print(f"DATA_DIR not set, using: {data_path}")
 
-# get IMAGES_DIR from environment variable, if not set, use default path
-images_path = os.getenv('IMAGES_DIR', '/home/min/a/kadhitha/scratch-space/transpose-fused/images/')
+images_path = os.getenv('IMAGES_DIR')
+if not images_path:
+    script_dir = os.path.dirname(os.path.abspath(__file__))
+    images_path = os.path.join(os.path.dirname(script_dir), 'images')
+    print(f"IMAGES_DIR not set, using: {images_path}")
+
+# Verify paths exist
+if not os.path.isdir(data_path):
+    raise FileNotFoundError(f"Data directory not found: {data_path}")
+if not os.path.isdir(images_path):
+    os.makedirs(images_path, exist_ok=True)
+    print(f"Created images directory: {images_path}")
+
 
 # Read the data
 df = pd.read_csv(f'{data_path}/hadamard-spmm.csv')
