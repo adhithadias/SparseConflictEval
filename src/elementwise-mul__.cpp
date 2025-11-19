@@ -2,15 +2,13 @@
 #include <chrono>
 
 #include "taco.h"
-#include "iterator.h"
 #include "input_parser.h"
+#include "iterator.h"
 
 using namespace taco;
 using namespace std;
 
-bool assembleWhileCompute = false;
-
-int computeexpr(taco_tensor_t *y, taco_tensor_t *A, taco_tensor_t *B) {
+int computeexpr(taco_tensor_t *Y, taco_tensor_t *A, taco_tensor_t *B) {
     int A1_dimension = (int)(A->dimensions[0]);
     int* __restrict A2_pos = (int*)(A->indices[1][0]);
     int* __restrict A2_crd = (int*)(A->indices[1][1]);
@@ -21,11 +19,12 @@ int computeexpr(taco_tensor_t *y, taco_tensor_t *A, taco_tensor_t *B) {
     int* __restrict B2_crd = (int*)(B->indices[1][1]);
     double* __restrict B_vals = (double*)(B->vals);
 
-    int y1_dimension = (int)(y->dimensions[0]);
-    double* y_vals = (double*)(y->vals);
+    int Y1_dimension = (int)(Y->dimensions[0]);
+    double* Y_vals = (double*)(Y->vals);
+
+    int32_t jcount = 0;
 
     for (int32_t i = 0; i < A1_dimension; i++) {
-        double tyval = 0;
 
         for (int32_t jA = A2_pos[i]; jA < A2_pos[i+1]; jA++) {
             int32_t j = A2_crd[jA];
@@ -34,41 +33,26 @@ int computeexpr(taco_tensor_t *y, taco_tensor_t *A, taco_tensor_t *B) {
             int32_t lowerBound = B2_pos[j];
             int32_t upperBound = B2_pos[j+1];
 
-            if (upperBound - lowerBound > 5) {
-                // Assume B2_Crd is sorted
-                // Search in B2_Crd array using BinarySearch
-                int32_t target = i; 
-                if (B2_crd[lowerBound] > target) {
-                    continue; // early exit
+            // Assume B2_Crd is sorted
+            // Search in B2_Crd array using BinarySearch
+            int32_t target = i; 
+            if (B2_crd[lowerBound] > target) {
+                continue; // early exit
+            }
+
+            while (upperBound - lowerBound >= 0) {
+                int32_t mid = (upperBound + lowerBound) / 2;
+                int midValue = B2_crd[mid];
+                if (midValue < target) {
+                    lowerBound = mid + 1;
+                } else if (midValue > target) {
+                    upperBound = mid - 1;
+                } else {
+                    Y_vals[jcount++] = A_ij * B_vals[mid];
+                    break;
                 }
-
-                while (upperBound - lowerBound >= 0) {
-                    int32_t mid = (upperBound + lowerBound) / 2;
-                    int midValue = B2_crd[mid];
-                    if (midValue < target) {
-                        lowerBound = mid + 1;
-                    } else if (midValue > target) {
-                        upperBound = mid - 1;
-                    } else {
-                        tyval += A_ij * B_vals[mid];
-                        break;
-                    }
-                }
-
-            } else {
-
-                for (int32_t jB = lowerBound; jB < upperBound; jB++) {
-                    int32_t l = B2_crd[jB];
-                    double B_kl = B_vals[jB];
-                    if (l == i) {
-                        tyval += A_ij * B_kl;
-                        break;
-                    }
-                }
-
             }
         }
-        y_vals[i] = tyval;
     }
 
     return 0;
@@ -81,7 +65,7 @@ int main(int argc, char* argv[]) {
     InputParser input(argc, argv);
 
     if (!input.cmdOptionExists("-f")) {
-        std::cout << "No input matrix specified. Specify with -f <filename> Exiting..." << std::endl;
+        std::cout << "No input matrix specified. Specify with -i <filename> Exiting..." << std::endl;
         return 1;
     }
 
@@ -91,7 +75,11 @@ int main(int argc, char* argv[]) {
     std::uniform_real_distribution<double> unif(0.0, 1.0);
 
     Format csr({Dense,Sparse});
-    Format  dv({Dense});
+
+    // std::string file_name = "bus.mtx";
+    // std::string file_name = "Trec5.mtx";
+    // std::string file_name = "cant.mtx";
+    // std::string file_name = "circuit5M.mtx";
 
     Tensor<double> A = read(filename, csr);
     A.setName("A");
@@ -109,7 +97,7 @@ int main(int argc, char* argv[]) {
 
     std::vector<std::chrono::microseconds> time_to_transpose;
 
-    for (int i = 0; i < 1; i++) {
+    for (int i = 0; i < 5; i++) {
         tic = std::chrono::high_resolution_clock::now();
         B = A.transpose({1, 0}, csr);
         toc = std::chrono::high_resolution_clock::now();
@@ -126,39 +114,31 @@ int main(int argc, char* argv[]) {
     taco_tensor_t* a_storage = A.getStorage();
     taco_tensor_t* b_storage = B.getStorage();
 
-    // iterate_csr(a_storage);
+    // iterate(a_storage);
     cout << "====================" << endl;
-    // iterate_csr(b_storage);
+    // iterate(b_storage);
 
 
     // Declare the output matrix to be a sparse matrix with the same dimensions as 
     // input matrix B, to be also stored as a doubly compressed sparse row matrix.
-    Tensor<double> y({A.getDimension(0)}, dv);
-    y.setName("y");
+    Tensor<double> y({A.getDimension(0), A.getDimension(1)}, csr);
+
     taco_tensor_t* y_storage = y.getStorage();
 
     // Define the SpMV computation using index notation.
-    IndexVar i("i"), j("j");
+    IndexVar i, j;
 
-    y(i) = sum(j, A(i,j) * C(j,i));
+    y(i,j) = A(i,j) * C(i,j);
 
-    IndexStmt stmt = y.getAssignment().concretize(true);
-    // IndexStmt stmt = y.getAssignment().concretize(true);
-    std::cout << "stmt: " << stmt << std::endl;
-    y.setAssembleWhileCompute(assembleWhileCompute);
-    y.setNewPath(true);
-    y.compile(stmt, assembleWhileCompute);
+    y.compile();
     y.assemble();
 
     std::vector<std::chrono::microseconds> time_to_compute_fuse;
 
-    // computeexpr(y_storage, a_storage, b_storage);
-    y.compute();
+    computeexpr(y_storage, a_storage, b_storage);
     for (int z = 0; z < 5; z++) {
         tic = std::chrono::high_resolution_clock::now();
-        // computeexpr(y_storage, a_storage, b_storage);
-        y.compute();
-        // computeexpr(y_storage, a_storage, b_storage);
+        computeexpr(y_storage, a_storage, b_storage);
         toc = std::chrono::high_resolution_clock::now();
         time_to_compute_fuse.push_back(
             std::chrono::duration_cast<std::chrono::microseconds>(toc-tic));
@@ -168,46 +148,40 @@ int main(int argc, char* argv[]) {
 
 
     double* y_vals = (double*)(y_storage->vals);
+    int32_t y1_dimension = (int)(y_storage->dimensions[0]);
+    int* __restrict y1_pos = (int*)(y_storage->indices[1][0]);
+    int32_t nnz = y1_pos[y1_dimension];
+
+    std::cout << "y1_dimension: " << y1_dimension << std::endl;
+    std::cout << "nnz: " << nnz << std::endl;
 
     // malloc double array to copy values of size y.getDimension(0)
-    double* y_copy_vals = (double*)malloc(y.getDimension(0) * sizeof(double));
+    double* y_copy_vals = (double*)malloc(nnz * sizeof(double));
 
     // copy the values from y to y_copy
-    for (int i = 0; i < y.getDimension(0); i++) {
+    for (int i = 0; i < nnz; i++) {
         y_copy_vals[i] = y_vals[i];
     }
 
-    Tensor<double> y0({A.getDimension(0)}, dv);
-    y0(i) = sum(j, A(i,j) * B(i,j));
-    y0.setName("y0");
-
-    IndexStmt stmt2 = y0.getAssignment().concretize(false);
-    // IndexStmt stmt2 = y.getAssignment().concretize(true);
-    std::cout << "stmt2: " << stmt2 << std::endl;
-    y0.setAssembleWhileCompute(assembleWhileCompute);
-    y0.setNewPath(false);
-    y0.compile(stmt2, assembleWhileCompute);
-    y0.assemble();
-
     std::vector<std::chrono::microseconds> time_to_compute_taco;
 
-    y0.compute();
+    y.compute();
     for (int z = 0; z < 5; z++) {
         tic = std::chrono::high_resolution_clock::now();
-        y0.compute();
+        y.compute();
         toc = std::chrono::high_resolution_clock::now();
         time_to_compute_taco.push_back(
             std::chrono::duration_cast<std::chrono::microseconds>(toc-tic));
         cout << "Time: " << time_to_compute_taco[z].count() / 1000.0 << " ms" << endl;
     }
 
-    y_storage = y0.getStorage();
+    y_storage = y.getStorage();
     y_vals = (double*)(y_storage->vals);
 
     // check if the output tensors are equal
     bool equal = true;
     int count = 0;
-    for (int i = 0; i < A.getDimension(0); i++) {
+    for (int i = 0; i < nnz; i++) {
         if (y_vals[i] - y_copy_vals[i] > 0.01 ) {
             equal = false;
             cout << "Error: " << i << ": " << y_vals[i] << " != " << y_copy_vals[i] <<  endl;
@@ -232,5 +206,9 @@ int main(int argc, char* argv[]) {
     cout << "Taco Transpose (ms), Taco (ms), Fused(Ours) (ms)" << endl;
     cout << transpose_median << ", " << taco_median << ", " 
         << fused_median << endl;
-    return 0;
+    
+    // confirm y_copy_
+
+    // Write the output of the computation to file (stored in the FROSTT format).
+    // write("y.tns", y);
 }

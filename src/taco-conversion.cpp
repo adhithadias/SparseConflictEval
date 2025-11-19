@@ -632,7 +632,7 @@ int main(int argc, char* argv[]) {
   // Create formats
 
   if (argc < 3) {
-    std::cerr << "[Usage] :: ./conversion tensor_file_name #test_case" << std::endl;
+    std::cerr << "[Usage] :: ./taco-conversion tensor_file_name #test_case" << ", argc: " << argc << std::endl;
     return 0;
   }
   int test_case = atoi(argv[2]);
@@ -656,6 +656,6 @@ int main(int argc, char* argv[]) {
   //   acc_time = test_coo_ell(argv[1]);
   }
   // std::cerr << "average among 1 runs = " << (float)acc_time << "(s)" << std::endl;
-  std::cerr << (float)acc_time * 1000 << " (ms)" << std::endl;
+  std::cout << (float)acc_time * 1000 << " (ms)" << std::endl;
   return 0;
 }

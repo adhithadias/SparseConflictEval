@@ -64,12 +64,8 @@ int main(int argc, char* argv[]) {
 
     auto tac = std::chrono::high_resolution_clock::now();
     auto dur = std::chrono::duration_cast<std::chrono::microseconds>(tac-tic).count()/1000.0;
-    cout << "Time to sort: " << dur << " ms, sort only: " << dur0 << endl;
-
-    // cout << "Sorted A" << endl;
-    // for (auto &t : vec) {
-    //     cout << "A[" << std::get<0>(t) << "," << std::get<2>(t) << "," << std::get<1>(t) << "] = " << std::get<3>(t) << endl;
-    // }
+    cout << "Sort time (ms), std sort only (ms)\n";
+    cout << dur << ", " << dur0 << endl;
 
 
     return 0;

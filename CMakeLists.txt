@@ -30,7 +30,7 @@ endif()
 
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/lib")
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin")
-set(C_CXX_FLAGS "-Wall -Wextra -Wno-unused-parameter \
+set(C_CXX_FLAGS "-O3 -Wall -Wextra -Wno-unused-parameter \
     -Wno-missing-field-initializers -Wmissing-declarations \
     -Woverloaded-virtual -pedantic-errors -Wno-deprecated")
 set(CMAKE_C_FLAGS "${C_CXX_FLAGS}")
@@ -38,17 +38,30 @@ set(CMAKE_CXX_FLAGS "${C_CXX_FLAGS} -std=c++17")
 
 add_compile_definitions(TACO NDEBUG)
 
-include_directories("/home/min/a/kadhitha/scratch-space/taco/include/")
+## TACO root path configuration
+# Priority: -DTACO_ROOT (cache var) > env TACO_ROOT > default path
+if(NOT DEFINED TACO_ROOT OR TACO_ROOT STREQUAL "")
+  if(DEFINED ENV{TACO_ROOT} AND NOT "$ENV{TACO_ROOT}" STREQUAL "")
+    set(TACO_ROOT "$ENV{TACO_ROOT}" CACHE PATH "Path to TACO root directory")
+  else()
+    set(TACO_ROOT "/home/min/a/kadhitha/scratch-space/fused-compiler/taco-transpose-fused" CACHE PATH "Path to TACO root directory")
+    # set(TACO_ROOT "/home/min/a/kadhitha/scratch-space/taco/" CACHE PATH "Path to TACO root directory")
+  endif()
+endif()
+message(STATUS "Using TACO_ROOT=${TACO_ROOT}")
+
+include_directories("${TACO_ROOT}/include/")
 include_directories(${PROJECT_SOURCE_DIR}/include) # Include .td files
 include_directories(${PROJECT_BINARY_DIR}/include) # Include generated files
 
-set(TACO_NEWEST_INCLUDE_PATH /home/min/a/kadhitha/scratch-space/taco/include)
-set(TACO_NEWEST_LIBRARY_PATH /home/min/a/kadhitha/scratch-space/taco/build/lib)
+# set(TACO_NEWEST_INCLUDE_PATH ${TACO_ROOT}/include)
+# set(TACO_NEWEST_LIBRARY_PATH ${TACO_ROOT}/build/lib)
 # set(TACO_CHOU_INCLUDE_PATH /home/min/a/kadhitha/scratch-space/transpose-fused/taco/include)
 # set(TACO_CHOU_LIBRARY_PATH /home/min/a/kadhitha/scratch-space/transpose-fused/taco/build/lib)
 
 # Add the linker flag globally
-add_link_options(-L/home/min/a/kadhitha/scratch-space/taco/build/lib)
+link_directories("${TACO_ROOT}/build/lib")
+add_link_options(-L"${TACO_ROOT}/build/lib")
 
 add_executable(sort3 src/sort3.cpp src/iterator.cpp)
 add_executable(sort2 src/sort2.cpp src/iterator.cpp)
@@ -61,6 +74,11 @@ add_executable(elementwise-mul src/elementwise-mul.cpp src/iterator.cpp)
 add_executable(tensor-elwisemul src/tensor-elwisemul.cpp src/iterator.cpp)
 add_executable(singlemat-contractl src/singlemat-contractl.cpp src/iterator.cpp)
 add_executable(taco-conversion src/taco-conversion.cpp)
+add_executable(spmspm src/spmspm.cpp)
+# add_executable(benchmark_spm_spm src/benchmark_spm_spm.cpp)
+add_executable(benchmark_spm_spm_spm src/benchmark_spm_spm_spm.cpp src/iterator.cpp)
+add_executable(hadamard-spmm src/hadamard-spmm.cpp src/iterator.cpp)
+# add_executable(mkl-spmm mkl-spmm.cpp src/iterator.cpp)
 
 # target_link_options(sort2 PRIVATE -L${TACO_NEWEST_LIBRARY_PATH})
 # target_include_directories(sort2 PRIVATE ${TACO_NEWEST_INCLUDE_PATH})
@@ -71,6 +89,7 @@ target_link_libraries(sort2 PRIVATE taco)
 target_link_libraries(sort3 PRIVATE taco)
 
 target_link_libraries(sort3_manual PRIVATE taco)
+target_link_libraries(spmspm PRIVATE taco)
 
 # target_link_options(tensorcontract-1dout PRIVATE -L${TACO_NEWEST_LIBRARY_PATH})
 # target_include_directories(tensorcontract-1dout PRIVATE ${TACO_NEWEST_INCLUDE_PATH})
@@ -103,3 +122,8 @@ target_link_libraries(singlemat-contractl PRIVATE taco)
 # target_link_options(taco-conversion PRIVATE -L${TACO_CHOU_LIBRARY_PATH})
 # target_include_directories(taco-conversion PRIVATE ${TACO_CHOU_INCLUDE_PATH})
 target_link_libraries(taco-conversion PRIVATE taco)
+
+
+# target_link_libraries(benchmark_spm_spm PRIVATE taco)
+target_link_libraries(benchmark_spm_spm_spm PRIVATE taco)
+target_link_libraries(hadamard-spmm PRIVATE taco)
