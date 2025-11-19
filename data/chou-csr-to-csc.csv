@@ -1,18 +1,18 @@
 Matrix, Chou Transpose (ms)
-bcsstk17.mtx, 4.965
-scircuit.mtx, 14.918
-mac_econ_fwd500.mtx, 18.327
-majorbasis.mtx, 21.645
-Lin.mtx, 23.341
-rma10.mtx, 28.126
-cop20k_A.mtx, 38.725
-webbase-1M.mtx, 51.946
-cant.mtx, 48.066
-pdb1HYS.mtx, 51.063
-ecology1.mtx, 70.681
-largebasis.mtx, 81.641
-consph.mtx, 70.36
-shipsec1.mtx, 93.55
-atmosmodd.mtx, 151.184
-pwtk.mtx, 169.897
-circuit5M.mtx, 944.707
+bcsstk17.mtx, 4.96
+scircuit.mtx, 14.202
+mac_econ_fwd500.mtx, 18.358
+majorbasis.mtx, 21.218
+Lin.mtx, 22.386
+rma10.mtx, 27.941
+cop20k_A.mtx, 38.055
+webbase-1M.mtx, 52.15
+cant.mtx, 47.651
+pdb1HYS.mtx, 50.555
+ecology1.mtx, 70.235
+largebasis.mtx, 80.477
+consph.mtx, 69.548
+shipsec1.mtx, 90.273
+atmosmodd.mtx, 147.435
+pwtk.mtx, 166.154
+

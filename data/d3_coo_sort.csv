@@ -1,8 +1,0 @@
-Tensor, COO Transpose (ms), COO Sort Only (ms)
-vast-2015-mc1-3d, 2597.75, 2168.45
-darpa1998, 3100.2, 2636.61
-nell-2, 11795.9, 10547.1
-freebase_music, 11041.4, 9428.67
-flickr-3d, 15629.6, 13804.7
-freebase_sampled, 16032, 13751.8
-nell-1, 219187, 196849

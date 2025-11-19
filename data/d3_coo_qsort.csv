@@ -1,0 +1,8 @@
+tensor, sort time all(ms), sort only(ms)
+vast-2015-mc1-3d, 1860.77, 1561.07
+darpa1998, 2258.95, 1932.35
+nell-2, 8486.84, 7598.7
+freebase_music, 8379.07, 7252.35
+flickr-3d, 11667.1, 10371.3
+freebase_sampled, 11807.5, 10217.5
+nell-1, 15701.9, 14069.3

@@ -1,0 +1,18 @@
+Matrix, Taco Transpose (ms), Taco (ms), Fused(Ours) (ms)
+bcsstk17.mtx, 84.401, 1.746, 3.517
+scircuit.mtx, 203.653, 3.084, 10.425
+mac_econ_fwd500.mtx, 265.848, 5.322, 7.281
+majorbasis.mtx, 355.657, 5.614, 7.171
+Lin.mtx, 345.463, 6.345, 6.027
+rma10.mtx, 499.254, 6.563, 30.936
+cop20k_A.mtx, 600.454, 7.311, 51.793
+webbase-1M.mtx, 657.925, 10.518, 16.973
+cant.mtx, 867.227, 11.174, 44.52
+pdb1HYS.mtx, 1013.75, 11.681, 75.171
+ecology1.mtx, 1067.7, 11.398, 12.861
+largebasis.mtx, 1247.19, 13.934, 24.017
+consph.mtx, 1347.71, 15.911, 54.311
+shipsec1.mtx, 1685.64, 21.304, 75.924
+atmosmodd.mtx, 2018.14, 20.997, 30.421
+pwtk.mtx, 2590.72, 30.123, 99.231
+
