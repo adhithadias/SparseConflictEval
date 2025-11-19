@@ -54,11 +54,6 @@ include_directories("${TACO_ROOT}/include/")
 include_directories(${PROJECT_SOURCE_DIR}/include) # Include .td files
 include_directories(${PROJECT_BINARY_DIR}/include) # Include generated files
 
-# set(TACO_NEWEST_INCLUDE_PATH ${TACO_ROOT}/include)
-# set(TACO_NEWEST_LIBRARY_PATH ${TACO_ROOT}/build/lib)
-# set(TACO_CHOU_INCLUDE_PATH /home/min/a/kadhitha/scratch-space/transpose-fused/taco/include)
-# set(TACO_CHOU_LIBRARY_PATH /home/min/a/kadhitha/scratch-space/transpose-fused/taco/build/lib)
-
 # Add the linker flag globally
 link_directories("${TACO_ROOT}/build/lib")
 add_link_options(-L"${TACO_ROOT}/build/lib")
@@ -80,50 +75,18 @@ add_executable(benchmark_spm_spm_spm src/benchmark_spm_spm_spm.cpp src/iterator.
 add_executable(hadamard-spmm src/hadamard-spmm.cpp src/iterator.cpp)
 # add_executable(mkl-spmm mkl-spmm.cpp src/iterator.cpp)
 
-# target_link_options(sort2 PRIVATE -L${TACO_NEWEST_LIBRARY_PATH})
-# target_include_directories(sort2 PRIVATE ${TACO_NEWEST_INCLUDE_PATH})
 target_link_libraries(sort2 PRIVATE taco)
-
-# target_link_options(sort3 PRIVATE -L${TACO_NEWEST_LIBRARY_PATH})
-# target_include_directories(sort3 PRIVATE ${TACO_NEWEST_INCLUDE_PATH})
 target_link_libraries(sort3 PRIVATE taco)
-
 target_link_libraries(sort3_manual PRIVATE taco)
 target_link_libraries(spmspm PRIVATE taco)
-
-# target_link_options(tensorcontract-1dout PRIVATE -L${TACO_NEWEST_LIBRARY_PATH})
-# target_include_directories(tensorcontract-1dout PRIVATE ${TACO_NEWEST_INCLUDE_PATH})
 target_link_libraries(tensorcontract-1dout PRIVATE taco)
-
-# target_link_options(dotprod-denseout PRIVATE -L${TACO_NEWEST_LIBRARY_PATH})
-# target_include_directories(dotprod-denseout PRIVATE ${TACO_NEWEST_INCLUDE_PATH})
 target_link_libraries(dotprod-denseout PRIVATE taco)
-
-# target_link_options(dotprod-spout PRIVATE -L${TACO_NEWEST_LIBRARY_PATH})
-# target_include_directories(dotprod-spout PRIVATE ${TACO_NEWEST_INCLUDE_PATH})
 target_link_libraries(dotprod-spout PRIVATE taco)
-
-# target_link_options(singlemat-contract PRIVATE -L${TACO_NEWEST_LIBRARY_PATH})
-# target_include_directories(singlemat-contract PRIVATE ${TACO_NEWEST_INCLUDE_PATH})
 target_link_libraries(singlemat-contract PRIVATE taco)
-
-# target_link_options(elementwise-mul PRIVATE -L${TACO_NEWEST_LIBRARY_PATH})
-# target_include_directories(elementwise-mul PRIVATE ${TACO_NEWEST_INCLUDE_PATH})
 target_link_libraries(elementwise-mul PRIVATE taco)
-
-# target_link_options(tensorcontract-elwisemul PRIVATE -L${TACO_NEWEST_LIBRARY_PATH})
-# target_include_directories(tensorcontract-elwisemul PRIVATE ${TACO_NEWEST_INCLUDE_PATH})
 target_link_libraries(tensor-elwisemul PRIVATE taco)
-
-# target_link_options(singlemat-contractl PRIVATE -L${TACO_NEWEST_LIBRARY_PATH})
-# target_include_directories(singlemat-contractl PRIVATE ${TACO_NEWEST_INCLUDE_PATH})
 target_link_libraries(singlemat-contractl PRIVATE taco)
-
-# target_link_options(taco-conversion PRIVATE -L${TACO_CHOU_LIBRARY_PATH})
-# target_include_directories(taco-conversion PRIVATE ${TACO_CHOU_INCLUDE_PATH})
 target_link_libraries(taco-conversion PRIVATE taco)
-
-
 # target_link_libraries(benchmark_spm_spm PRIVATE taco)
 target_link_libraries(benchmark_spm_spm_spm PRIVATE taco)
 target_link_libraries(hadamard-spmm PRIVATE taco)
