@@ -37,3 +37,5 @@ do
     done
 done
 echo "Results saved to data/hadamard-spmm.csv"
+
+python3 scripts/plot-bar-and-heatmap.py

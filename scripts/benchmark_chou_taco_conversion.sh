@@ -1,7 +1,7 @@
 #!/bin/bash
 
 if [ -z "$TENSOR_DIR" ]; then
-    export TENSOR_DIR=~/scratch-space/suitesparse
+    export TENSOR_DIR=/home/min/a/kadhitha/scratch-space/matrices
 fi
 
 matrices=(
@@ -29,7 +29,7 @@ outputs="Matrix, Chou Transpose (ms)\n"
 for matrix in "${matrices[@]}"; do
     echo "Processing matrix: $matrix"
     # ./build/bin/dotprod-denseout -f "$TENSOR_DIR/$matrix/$matrix.mtx"
-    output=$(./build/bin/taco-conversion "$TENSOR_DIR/$matrix/$matrix.mtx" 2)
+    output=$(./build/bin/taco-conversion "$TENSOR_DIR/$matrix.mtx" 2)
     wait
     echo "$output"
     # get the last line of the output

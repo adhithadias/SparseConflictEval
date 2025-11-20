@@ -257,6 +257,18 @@ int main(int argc, char* argv[]) {
         std::cout << "No input matrix specified. Specify with -i <filename> Exiting..." << std::endl;
         return 1;
     }
+    if (!input.cmdOptionExists("-a")) {
+        std::cout << "No assembleWhileCompute flag specified. Using default true." << std::endl;
+    } else {
+        std::string assemble_flag = input.getCmdOption("-a");
+        if (assemble_flag == "0") {
+            assembleWhileCompute = false;
+            std::cout << "AssembleWhileCompute flag set to false." << std::endl;
+        } else {
+            assembleWhileCompute = true;
+            std::cout << "AssembleWhileCompute flag set to true." << std::endl;
+        }
+    }
 
     const std::string &filename = input.getCmdOption("-f");
 

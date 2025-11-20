@@ -6,7 +6,7 @@
 
 # if TENSOR_DIR is not set, set it to default path
 if [ -z "$TENSOR_DIR" ]; then
-    export TENSOR_DIR=/home/min/a/kadhitha/scratch-space/suitesparse
+    export TENSOR_DIR=/home/min/a/kadhitha/scratch-space/matrices
 fi
 # ./build/bin/dotprod-denseout -f ~/scratch-space/suitesparse/Lin/Lin.mtx
 
@@ -35,7 +35,7 @@ outputs="Matrix, Taco Transpose (ms), Taco (ms), Fused(Ours) (ms)\n"
 for matrix in "${matrices[@]}"; do
     echo "Processing matrix: $matrix"
     # ./build/bin/dotprod-denseout -f "$TENSOR_DIR/$matrix/$matrix.mtx"
-    output=$(./build/bin/dotprod-denseout -f "$TENSOR_DIR/$matrix/$matrix.mtx")
+    output=$(./build/bin/dotprod-denseout -f "$TENSOR_DIR/$matrix.mtx")
     echo "$output"
     # get the last line of the output
     last_line=$(echo "$output" | tail -n 1)
