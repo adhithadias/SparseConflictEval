@@ -1,13 +1,5 @@
 #!/bin/bash
 
-# export NEW_TACO_COMPILER=/home/min/a/kadhitha/scratch-space/fused-compiler/taco-transpose-fused
-# export PATH=$NEW_TACO_COMPILER/buid/bin/:$PATH
-# export LD_LIBRARY_PATH=$NEW_TACO_COMPILER/build/lib:$LD_LIBRARY_PATH
-
-# TENSOR_DIR=~/scratch-space/suitesparse
-# ./build/bin/dotprod-denseout -f ~/scratch-space/suitesparse/Lin/Lin.mtx
-
-# get TENSOR_DIR from environment variable if set
 if [ -z "$TENSOR_DIR" ]; then
     export TENSOR_DIR=~/scratch-space/suitesparse
 fi
