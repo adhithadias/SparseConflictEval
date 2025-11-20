@@ -24,7 +24,7 @@ outputs="Matrix, M, N, nnz, Transpose (ms)\n"
 # execute python scripts/transpose.py for each matrix and get the output
 for matrix in "${matrices[@]}"; do
     echo "Processing matrix: $matrix"
-    output=$(python3 scripts/transpose.py -f "$matrix".mtx 2>&1)
+    output=$(python3 scripts/scipy_transpose.py -f "$matrix".mtx 2>&1)
     wait
     # get the last line of the output
     last_line=$(echo "$output" | tail -n 1)
@@ -32,4 +32,4 @@ for matrix in "${matrices[@]}"; do
     outputs+="$last_line\n"
 done
 
-echo -e "$outputs" > data/transpose_results.csv
+echo -e "$outputs" > data/scipy-csr-to-csc.csv
