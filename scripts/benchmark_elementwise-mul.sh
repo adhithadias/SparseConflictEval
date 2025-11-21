@@ -39,7 +39,11 @@ matrices=(
     "pwtk"
 )
 
-output_file="data/elementwise-mul.csv"
+if [ "$assembleWhileCompute" -eq 0 ]; then
+    output_file="data/elementwise-mul-without.csv"
+else
+    output_file="data/elementwise-mul-with.csv"
+fi
 outputs="Matrix, Taco Transpose (ms), Taco (ms), Fused(Ours) (ms)\n"
 
 for matrix in "${matrices[@]}"; do
@@ -60,7 +64,7 @@ echo "Results saved to $output_file"
 # 0 is elementwise-mul
 # if assembleWhileCompute is 0, then pass fig 11, else fig12
 if [ "$assembleWhileCompute" -eq 0 ]; then
-    python3 scripts/matrix-plot.py 0 fig11
+    python3 scripts/matrix-plot.py 2 fig11
 else
     python3 scripts/matrix-plot.py 0 fig12
 fi
