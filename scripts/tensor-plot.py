@@ -3,6 +3,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import matplotlib
 from enum import Enum
+import os
 
 class FontSize(Enum):
     SMALL_SIZE = 8
@@ -15,8 +16,15 @@ matplotlib.rcParams['pdf.fonttype'] = 42
 matplotlib.rcParams['ps.fonttype'] = 42
 
 datafile = 'data/tensorcontract-1dout.csv'
-savefile1 = 'images/tensorcontract-1dout.pdf'
-savefile2 = 'images/tensorcontract-1dout-speedup.pdf'
+savefile1 = 'images/fig16/tensorcontract-1dout.pdf'
+savefile2 = 'images/fig16/tensorcontract-1dout-speedup.pdf'
+tensor_stats_file = 'data/tensor-stats.csv'
+
+# create output directory if it doesn't exist
+output_dir = 'images/fig16'
+if not os.path.exists(output_dir):
+    os.makedirs(output_dir, exist_ok=True)
+    print(f"Created output directory: {output_dir}")
 
 # datafile = 'data/tensor-elwisemul.csv'
 # savefile = 'images/tensor-elwisemul.pdf'
@@ -34,10 +42,14 @@ def convert_rows_to_string(row):
 # Replace 'data.csv' with the actual path to your CSV file
 df = pd.read_csv(datafile)
 df.columns = df.columns.str.strip()
-tensors = pd.read_csv('data/tensors.csv')
+tensors = pd.read_csv(tensor_stats_file)
 tensors.columns = tensors.columns.str.strip()
 coo_sort = pd.read_csv('data/d3_coo_qsort.csv')
 coo_sort.columns = coo_sort.columns.str.strip()
+print(tensors)
+
+# combine tensors info into main df
+df = df.merge(tensors, on='tensor', how='left')
 
 # remove .mtx from the matrix column
 df['Tensor'] = df['tensor'].str.replace('.tns', '')
@@ -47,17 +59,17 @@ df['Taco Transpose + Taco (ms)'] = df['transpose(ms)'] + df['taco(ms)']
 df['COO Transpose + Taco (ms)'] = coo_sort['sort time all(ms)'] + df['taco(ms)']
 df['COO Transpose Only + Taco (ms)'] = coo_sort['sort only(ms)'] + df['taco(ms)']
 
-df['Density'] = tensors['Nnz'] / (tensors['D0'] * tensors['D1'] * tensors['D2'])
+df['Density'] = df['nnz'] / (df['d0'] * df['d1'] * df['d2'])
 
 # Calculate speedup of Fused over Transpose + Taco
 df['Speedup vs Taco'] = df['Taco Transpose + Taco (ms)'] / df['ours(ms)']
 df['Speedup vs Trnsp Manual + Taco'] = df['COO Transpose + Taco (ms)'] / df['ours(ms)']
 df['Speedup vs Sort Only + Taco'] = df['COO Transpose Only + Taco (ms)'] / df['ours(ms)']
 
-df['D0'] = tensors['D0'].apply(lambda x: convert_rows_to_string(x))
-df['D1'] = tensors['D1'].apply(lambda x: convert_rows_to_string(x))
-df['D2'] = tensors['D2'].apply(lambda x: convert_rows_to_string(x))
-df['Nnz'] = tensors['Nnz'].apply(lambda x: convert_rows_to_string(x))
+df['d0'] = df['d0'].apply(lambda x: convert_rows_to_string(x))
+df['d1'] = df['d1'].apply(lambda x: convert_rows_to_string(x))
+df['d2'] = df['d2'].apply(lambda x: convert_rows_to_string(x))
+df['nnz'] = df['nnz'].apply(lambda x: convert_rows_to_string(x))
 
 print(df)
 

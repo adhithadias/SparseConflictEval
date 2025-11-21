@@ -88,7 +88,7 @@ int main(int argc, char* argv[]) {
         << ", " << dim2 
         << ", " << dim3 
         << ", " << nnz 
-        << ", " << (float)nnz / (dim1 * dim2 * dim3) 
+        << ", " << std::scientific << (double)nnz / ((double)dim1 * dim2 * dim3) 
         << endl;
     cout << "Sort time (ms), std sort only (ms)\n";
     cout << dur << ", " << dur0 << endl;

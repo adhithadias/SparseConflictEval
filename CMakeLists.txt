@@ -60,7 +60,7 @@ add_link_options(-L"${TACO_ROOT}/build/lib")
 
 add_executable(sort3 src/sort3.cpp src/iterator.cpp)
 add_executable(sort2 src/sort2.cpp src/iterator.cpp)
-add_executable(sort3_qsort src/sort3_manual.cpp src/iterator.cpp)
+add_executable(sort3_qsort src/sort3_qsort.cpp src/iterator.cpp)
 add_executable(tensorcontract-1dout src/tensorcontract-1dout.cpp src/iterator.cpp)
 add_executable(dotprod-denseout src/dotprod-denseout.cpp src/iterator.cpp)
 add_executable(dotprod-spout src/dotprod-spout.cpp src/iterator.cpp)
