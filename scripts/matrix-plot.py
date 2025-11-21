@@ -69,7 +69,7 @@ print(f"Processing {datafile} and saving to {savefile1} and {savefile2}")
 df = pd.read_csv(datafile)
 df2 = pd.read_csv(chou_etal)
 df3 = pd.read_csv(scipy_transpose)
-matrices = pd.read_csv("data/matrices.csv")
+matrices = pd.read_csv("data/matrix-stats.csv")
 
 # Strip any whitespace from headers
 df.columns = df.columns.str.strip()
@@ -82,12 +82,18 @@ df["Transpose (ms)"] = df3["Transpose (ms)"]
 # remove .mtx from the matrix column
 df["Matrix"] = df["Matrix"].str.replace(".mtx", "")
 
+# add matrices stats to df
+df = df.merge(
+    matrices[["Matrix", "Rows", "Cols", "Nnz"]], on="Matrix",
+    how="left",
+)
+
 # Calculate the sum of Transpose and Taco for each matrix
 df["Transpose + Taco (ms)"] = df["Transpose (ms)"] + df["Taco (ms)"]
 df["Chou Transpose + Taco (ms)"] = df["Chou Transpose (ms)"] + df["Taco (ms)"]
 df["Taco Transpose + Taco (ms)"] = df["Taco Transpose (ms)"] + df["Taco (ms)"]
 
-df["Density"] = matrices["Nnz"] / (matrices["Rows"] * matrices["Columns"])
+df["Density"] = matrices["Nnz"] / (matrices["Rows"] * matrices["Cols"])
 
 # Calculate speedup of Fused over Transpose + Taco
 df["Speedup"] = df["Transpose + Taco (ms)"] / df["Fused(Ours) (ms)"]
