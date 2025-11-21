@@ -29,6 +29,8 @@ if not images_path:
     script_dir = os.path.dirname(os.path.abspath(__file__))
     images_path = os.path.join(os.path.dirname(script_dir), 'images')
     print(f"IMAGES_DIR not set, using: {images_path}")
+    
+images_path = os.path.join(images_path, 'fig18')
 
 # Verify paths exist
 if not os.path.isdir(data_path):
