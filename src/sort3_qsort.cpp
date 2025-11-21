@@ -35,6 +35,10 @@ int main(int argc, char* argv[]) {
     int32_t iA = A1_pos[0];
     int32_t pA1_end = A1_pos[1];
 
+    auto dim1 = A.getDimensions()[0];
+    auto dim2 = A.getDimensions()[1];
+    auto dim3 = A.getDimensions()[2];
+    auto nnz = pA1_end-iA;
     cout << "dimensions: " << A.getDimensions()[0] << ", " << A.getDimensions()[1] << ", " << A.getDimensions()[2] << endl;
     cout << "number of nonzeros: " << a_storage->vals_size << endl;
     cout << "number of nonzeros: " << pA1_end-iA << endl;
@@ -79,6 +83,13 @@ int main(int argc, char* argv[]) {
 
     auto tac = std::chrono::high_resolution_clock::now();
     auto dur = std::chrono::duration_cast<std::chrono::microseconds>(tac-tic).count()/1000.0;
+    cout << "m, n, k, nnz, sparsity\n";
+    cout << dim1 
+        << ", " << dim2 
+        << ", " << dim3 
+        << ", " << nnz 
+        << ", " << (float)nnz / (dim1 * dim2 * dim3) 
+        << endl;
     cout << "Sort time (ms), std sort only (ms)\n";
     cout << dur << ", " << dur0 << endl;
 
