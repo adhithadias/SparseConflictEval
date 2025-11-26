@@ -5,6 +5,8 @@
 # for each pair, execute for r rounds and read the output from the terminal and save it to a file
 # there are two outputs Fused median: X ms and Taco median: Y ms in two lines
 
+echo "Starting Hadamard-SPMM benchmarks..."
+
 if [ -z "$TACO_ROOT" ]; then
     export TACO_ROOT=/home/min/a/kadhitha/scratch-space/fused-compiler/taco-transpose-fused
 fi
@@ -19,7 +21,9 @@ r=10
 mkdir -p tmp
 
 # write Size, Density, Ours (ms), Hadamard (ms), Matmul (ms), Taco (ms) to data/hadamard-spmm.csv
-echo "Size,Density,Ours (ms),Hadamard (ms),Matmul (ms),Taco (ms)" > data/hadamard-spmm.csv
+# echo "Size,Density,Ours (ms),Hadamard (ms),Matmul (ms),Taco (ms)" > data/hadamard-spmm.csv
+
+outputs="Size,Density,Ours (ms),Hadamard (ms),Matmul (ms),Taco (ms)\n"
 
 # iterate over all combinations of val1 and val2
 for i in {0..3}
@@ -31,11 +35,15 @@ do
         echo "Running for n=$n, d=$d"
         output=$(./build/bin/benchmark_spm_spm_spm -n $n -d $d -r $r)
         last_line=$(echo "$output" | tail -n 1)
-        echo "$last_line"
-        echo "$last_line" >> data/hadamard-spmm.csv
+        # echo "$last_line"
+        outputs+="$last_line\n"
+        # echo "$last_line" >> data/hadamard-spmm.csv
         # ./build/bin/benchmark_spm_spm_spm -n $n -d $d -r $r | tee -a tmp/benchmark_spm_spm_spm_results.txt
     done
 done
+
+printf '%b' "$outputs"
+echo -e "$outputs" > data/hadamard-spmm.csv
 echo "Results saved to data/hadamard-spmm.csv"
 
 python3 scripts/plot-bar-and-heatmap.py

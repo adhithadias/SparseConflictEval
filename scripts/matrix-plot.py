@@ -28,6 +28,8 @@ scipy_transpose = "data/scipy-csr-to-csc.csv"
 # get which matrix to plot from command line
 matrix_type = 0
 
+print("Starting plot generation...")
+
 # get matrix_type from command line
 matrix_type = int(sys.argv[1])
 print(f"Matrix type: {matrix_type}")
@@ -101,7 +103,7 @@ df["Speedup Chou"] = df["Chou Transpose + Taco (ms)"] / df["Fused(Ours) (ms)"]
 df["Speedup Taco Default"] = df["Taco Transpose + Taco (ms)"] / df["Fused(Ours) (ms)"]
 
 pd.set_option("display.max_columns", None)  # Show all columns
-print(df)
+# print(df)
 
 # Set up the figure and axis
 fig, ax1 = plt.subplots(figsize=(14, 8))

@@ -7,6 +7,8 @@
 # SUITESPARSE_DIR=~/scratch-space/suitesparse
 # ./build/bin/dotprod-denseout -f ~/scratch-space/suitesparse/Lin/Lin.mtx
 
+echo "Starting elementwise multiplication benchmarks..."
+
 if [ -z "$TENSOR_DIR" ]; then
     export TENSOR_DIR=/home/min/a/kadhitha/scratch-space/matrices
 fi
@@ -39,6 +41,7 @@ matrices=(
     "pwtk"
 )
 
+mkdir -p data
 if [ "$assembleWhileCompute" -eq 0 ]; then
     output_file="data/elementwise-mul-without.csv"
 else
@@ -50,14 +53,16 @@ for matrix in "${matrices[@]}"; do
     echo "Processing matrix: $matrix"
     # ./build/bin/dotprod-denseout -f "$TENSOR_DIR/$matrix/$matrix.mtx"
     output=$(./build/bin/elementwise-mul -f "$TENSOR_DIR/$matrix.mtx" -a "$assembleWhileCompute")
-    echo "$output"
+    # echo "$output"
+    wait
     # get the last line of the output
     last_line=$(echo "$output" | tail -n 1)
     last_line="$matrix.mtx, $last_line"
     outputs+="$last_line\n"
-    echo "$last_line"
+    # echo "$last_line"
 done
 
+printf '%b' "$outputs"
 echo -e "$outputs" > "$output_file"
 echo "Results saved to $output_file"
 
@@ -68,3 +73,5 @@ if [ "$assembleWhileCompute" -eq 0 ]; then
 else
     python3 scripts/matrix-plot.py 0 fig12
 fi
+
+echo "\n\n"

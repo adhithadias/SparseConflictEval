@@ -4,12 +4,16 @@
 # export PATH=$NEW_TACO_COMPILER/build/bin/:$PATH
 # export LD_LIBRARY_PATH=$NEW_TACO_COMPILER/build/lib:$LD_LIBRARY_PATH
 
+echo "Starting 3D tensor contraction benchmarks..."
+
 if [ -z "$TENSOR_DIR" ]; then
     export TENSOR_DIR=/home/min/a/kadhitha/scratch-space/tns
 fi
 
+mkdir -p data
 touch ./data/tensorcontract-1dout.csv
-echo "tensor, transpose(ms), taco(ms), ours(ms)" > ./data/tensorcontract-1dout.csv
+outputs="tensor, transpose(ms), taco(ms), ours(ms)\n"
+# echo "tensor, transpose(ms), taco(ms), ours(ms)" > ./data/tensorcontract-1dout.csv
 tensors=(
     vast-2015-mc1-3d 
     darpa1998 
@@ -24,13 +28,19 @@ for tensor in "${tensors[@]}"
 do
     echo "Running tensorcontract-1dout for $tensor"
     output=$(./build/bin/tensorcontract-1dout -f $TENSOR_DIR/$tensor.tns)
-
+    wait
     # read the results file and extract the last line with timings xxx.xxx, xxx.xxx, xxx.xxx
     # and append it to a .csv file with the tensor name as the first column
     line=$(echo "$output" | tail -n 1)
-    echo $line
-    echo "$tensor, $line" >> ./data/tensorcontract-1dout.csv
+    # echo $line
+    outputs+="$tensor, $line\n"
+    # echo "$tensor, $line" >> ./data/tensorcontract-1dout.csv
 done
+
+printf '%b' "$outputs"
+echo -e "$outputs" >> ./data/tensorcontract-1dout.csv
 echo "Results saved to tensorcontract-1dout.csv"
 
 python3 scripts/tensor-plot.py
+
+echo "\n\n"

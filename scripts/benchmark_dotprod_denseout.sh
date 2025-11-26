@@ -4,6 +4,8 @@
 # export PATH=$NEW_TACO_COMPILER/buid/bin/:$PATH
 # export LD_LIBRARY_PATH=$NEW_TACO_COMPILER/build/lib:$LD_LIBRARY_PATH
 
+echo "Starting batched-dotprod benchmarks..."
+
 # if TENSOR_DIR is not set, set it to default path
 if [ -z "$TENSOR_DIR" ]; then
     export TENSOR_DIR=/home/min/a/kadhitha/scratch-space/matrices
@@ -36,16 +38,20 @@ for matrix in "${matrices[@]}"; do
     echo "Processing matrix: $matrix"
     # ./build/bin/dotprod-denseout -f "$TENSOR_DIR/$matrix/$matrix.mtx"
     output=$(./build/bin/dotprod-denseout -f "$TENSOR_DIR/$matrix.mtx")
-    echo "$output"
+    # echo "$output"
+    wait
     # get the last line of the output
     last_line=$(echo "$output" | tail -n 1)
     last_line="$matrix.mtx, $last_line"
     outputs+="$last_line\n"
-    echo "$last_line"
+    # echo "$last_line"
 done
 
+printf '%b' "$outputs"
 echo -e "$outputs" > "$output_file"
 echo "Results saved to $output_file"
 
 # 1 is dotprod-denseout
 python3 scripts/matrix-plot.py 1 fig15
+
+echo "\n\n"

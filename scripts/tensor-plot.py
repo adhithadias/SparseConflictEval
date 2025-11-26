@@ -15,6 +15,8 @@ plt.rcParams.update({'font.size': FontSize.BIGGER_SIZE.value})
 matplotlib.rcParams['pdf.fonttype'] = 42
 matplotlib.rcParams['ps.fonttype'] = 42
 
+print("Starting tensor contraction plot generation...")
+
 datafile = 'data/tensorcontract-1dout.csv'
 savefile1 = 'images/fig16/tensorcontract-1dout.pdf'
 savefile2 = 'images/fig16/tensorcontract-1dout-speedup.pdf'
@@ -30,7 +32,7 @@ if not os.path.exists(output_dir):
 # savefile = 'images/tensor-elwisemul.pdf'
 
 def convert_rows_to_string(row):
-    print('row', row)
+    # print('row', row)
     if row / 1_000_000 > 1:
         return f"{row / 1_000_000:.1f}M"
     elif row / 1_000 > 1:
@@ -46,7 +48,7 @@ tensors = pd.read_csv(tensor_stats_file)
 tensors.columns = tensors.columns.str.strip()
 coo_sort = pd.read_csv('data/d3_coo_qsort.csv')
 coo_sort.columns = coo_sort.columns.str.strip()
-print(tensors)
+# print(tensors)
 
 # combine tensors info into main df
 df = df.merge(tensors, on='tensor', how='left')
@@ -71,7 +73,7 @@ df['d1'] = df['d1'].apply(lambda x: convert_rows_to_string(x))
 df['d2'] = df['d2'].apply(lambda x: convert_rows_to_string(x))
 df['nnz'] = df['nnz'].apply(lambda x: convert_rows_to_string(x))
 
-print(df)
+# print(df)
 
 # Set up the figure with two subplots
 fig, ax1 = plt.subplots(1, 1, figsize=(14, 7))

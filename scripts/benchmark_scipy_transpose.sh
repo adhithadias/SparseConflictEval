@@ -1,5 +1,7 @@
 #!/bin/bash
 
+echo "Starting SciPy transpose benchmarks..."
+
 # keep matrices bcsstk17 scircuit mac_econ_fwd500 majorbasis Lin rma10 cop20k_A webbase\-1M cant pdb1HYS ecology1 largebasis consph shipsec1 atmosmodd pwtk in an array
 matrices=(
     "bcsstk17"
@@ -28,8 +30,11 @@ for matrix in "${matrices[@]}"; do
     wait
     # get the last line of the output
     last_line=$(echo "$output" | tail -n 1)
-    echo "$last_line"
+    # echo "$last_line"
     outputs+="$last_line\n"
 done
 
+mkdir -p data
+printf '%b' "$outputs"
 echo -e "$outputs" > data/scipy-csr-to-csc.csv
+echo "\n\n"
