@@ -1,9 +1,21 @@
-# Steps to run the execution
+# Dependencies
+
+1. SparseConflict
+2. CMake
+3. Git
+
+# Building the project
 
 ```bash
-git clone 
+# build SparseConflict
+export TACO_ROOT=</path/to/SparseConflict/project/directory>
+bash build_taco.sh
+bash build_project.sh
 ```
 
+# Kernels
+
+This repository evaluates the following kernels against TACO.
 
 |---------------------------------------------------------------|
 |  Kernel                           | Name/File                 |  
@@ -22,13 +34,3 @@ git clone
 | Y(i,j,k) = A(i,j,k) * B(i,k,j)    | 3d-elwisemul              |
 | Y, A, B: CSF                      |                           |
 |---------------------------------------------------------------|
-
-
-
-
-# i want to type bash code
-```bash
-git clone --recurse-submodules -j2 
-
-
-```
