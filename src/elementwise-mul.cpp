@@ -10,11 +10,36 @@ using namespace std;
 
 bool assembleWhileCompute = true;
 
+/*
+0 1 1
+1 0 0
+0 0 0
+
+0, 2, 3, 3
+0, 1, 2 <- indices
+1, 2, 0 <- cols
+1, 1, 1 <- values
+
+0, 1 found
+0, 2 not found
+1, 0 found
+
+
+0 1 0
+1 0 0
+1 0 0
+*/
+
 inline __attribute__((always_inline)) int index_search(int *array, int arrayStart, int arrayEnd, int target) {
-    if (array[arrayStart] > target || ((arrayEnd - arrayStart > 0) && array[arrayEnd-1] < target)) {
+    // std::cout << arrayStart << ", " << 
+    //     array[arrayStart] << ", " 
+    //     << arrayEnd-1 << ", " << array[arrayEnd-1] << ", " << target << std::endl;
+    // assume sorted array
+    if (arrayEnd <= arrayStart || array[arrayStart] > target || array[arrayEnd-1] < target) {
       return -1; // early exit
     }
-    if (arrayEnd - arrayStart > 5) {
+    // std::cout << "Searching between " << arrayStart << " and " << arrayEnd - 1 << std::endl;
+    // if (arrayEnd - arrayStart > 5) {
     while (arrayEnd - arrayStart >= 0) {
       int mid = (arrayEnd + arrayStart) / 2;
       int midValue = array[mid];
@@ -28,15 +53,15 @@ inline __attribute__((always_inline)) int index_search(int *array, int arrayStar
         return mid;
       }
     }
-    }
-    else {
-      for (int32_t idx = arrayStart; idx < arrayEnd; idx++) {
-        int32_t column_idx = array[idx];
-        if (column_idx == target) {
-          return idx;
-        }
-      }
-    }
+    // }
+    // else {
+    //   for (int32_t idx = arrayStart; idx < arrayEnd; idx++) {
+    //     int32_t column_idx = array[idx];
+    //     if (column_idx == target) {
+    //       return idx;
+    //     }
+    //   }
+    // }
     return -1;
 }
 
@@ -125,6 +150,26 @@ int compute_only_expr(taco_tensor_t *y, taco_tensor_t *A, taco_tensor_t *C) {
     return 0;
 }
 
+/*
+0 1 1
+1 0 0
+0 0 0
+
+0, 2, 3, 3
+0, 1, 2 <- indices
+1, 2, 0 <- cols
+1, 1, 1 <- values
+
+0, 1 found
+0, 2 not found
+1, 0 found
+
+
+0 1 0
+1 0 0
+1 0 0
+*/
+
 int compute_and_assemble_expr(taco_tensor_t *y, taco_tensor_t *A, taco_tensor_t *C) {
     int y1_dimension = (int)(y->dimensions[0]);
     int* __restrict y2_pos = (int*)(y->indices[1][0]);
@@ -157,12 +202,14 @@ int compute_and_assemble_expr(taco_tensor_t *y, taco_tensor_t *A, taco_tensor_t 
       for (int32_t jA = A2_pos[i]; jA < A2_pos[(i + 1)]; jA++) {
         int32_t j = A2_crd[jA];
 
+        // std::cout << "i: " << i << ", j: " << j << ", v: " << A_vals[jA] << std::endl;
+
         int32_t index_found = index_search(C2_crd, C2_pos[j], C2_pos[(j + 1)], i);
         if (index_found != -1) {
           if (y_capacity <= jy) {
-              y_vals = (double*)realloc(y_vals, sizeof(double) * (y_capacity * 2));
-              y_capacity *= 2;
-            }
+            y_vals = (double*)realloc(y_vals, sizeof(double) * (y_capacity * 2));
+            y_capacity *= 2;
+          }
           /* Search node */
           y_vals[jy] = A_vals[jA] * C_vals[index_found];
           if (y2_crd_size <= jy) {
@@ -375,6 +422,9 @@ int main(int argc, char* argv[]) {
     }
     // time_to_compute_fuse = std::chrono::duration_cast<std::chrono::microseconds>(toc-tic);
 
+    // write the y tensor to file
+    // write("y_fused.mtx", y);
+    // std::cout << "After write" << std::endl;
 
     double* y_vals = (double*)(y_storage->vals);
     int32_t y1_dimension = (int)(y_storage->dimensions[0]);
@@ -390,6 +440,7 @@ int main(int argc, char* argv[]) {
     // copy the values from y to y_copy
     for (int i = 0; i < nnz; i++) {
         y_copy_vals[i] = y_vals[i];
+        // cout << "y_copy_vals[" << i << "] = " << y_copy_vals[i] << endl;
     }
 
     Tensor<double> y0({A.getDimension(0), A.getDimension(1)}, csr);

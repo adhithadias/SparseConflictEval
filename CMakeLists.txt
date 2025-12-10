@@ -30,7 +30,7 @@ endif()
 
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/lib")
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin")
-set(C_CXX_FLAGS "-O3 -Wall -Wextra -Wno-unused-parameter \
+set(C_CXX_FLAGS "-O3 -ffast-math -Wall -Wextra -Wno-unused-parameter \
     -Wno-missing-field-initializers -Wmissing-declarations \
     -Woverloaded-virtual -pedantic-errors -Wno-deprecated")
 set(CMAKE_C_FLAGS "${C_CXX_FLAGS}")
